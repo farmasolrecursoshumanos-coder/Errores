@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Farmasol — Tablero de errores</title>
+<style>
+  :root{
+    --bg:#0A0C0B;
+    --card:#12100D00;
+    --panel:#111512;
+    --line:#26302B;
+    --green:#37E58C;
+    --cyan:#3FD6E0;
+    --amber:#E5B93D;
+    --red:#E5573F;
+    --ink:#EAF2ED;
+    --muted:#8FA39A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .mono{font-family:'Courier New', monospace;}
+  header{
+    padding:48px 40px 32px; border-bottom:1px solid var(--line);
+  }
+  header .eyebrow{
+    text-transform:uppercase; letter-spacing:.14em;
+    font-size:12px; color:var(--cyan); margin:0 0 8px;
+  }
+  header h1{ font-size:30px; margin:0 0 6px; font-weight:400; color:var(--ink); }
+  header p{ font-size:14px; color:var(--muted); margin:0; }
+  main{ max-width:1040px; margin:0 auto; padding:32px 24px 80px; }
+  section{ margin-bottom:56px; }
+  .section-head{
+    display:flex; align-items:baseline; gap:12px; margin-bottom:20px;
+    border-bottom:1px solid var(--line); padding-bottom:10px;
+  }
+  .section-num{ font-size:12px; color:var(--green); letter-spacing:.08em; }
+  .section-head h2{ font-size:19px; font-weight:400; margin:0; color:var(--ink); }
+  .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px; }
+  .kpi{ background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:16px 18px; }
+  .kpi .label{ font-size:12px; color:var(--muted); margin:0 0 6px; }
+  .kpi .value{ font-size:26px; margin:0; color:var(--green); }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .chart-box{ background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:16px; }
+  .chart-box .cap{ font-size:12px; color:var(--muted); margin:0 0 10px; }
+  canvas{ max-height:220px; }
+  table{ width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
+  th{ text-align:right; padding:8px 10px; border-bottom:1px solid var(--line); color:var(--muted); font-weight:400; font-size:12px; }
+  th:first-child, td:first-child{ text-align:left; }
+  td{ text-align:right; padding:8px 10px; border-bottom:1px solid var(--line); color:var(--ink); }
+  .note{ font-size:13px; color:var(--muted); line-height:1.6; margin:14px 0 0; }
+  .legend{ display:flex; flex-wrap:wrap; gap:14px; margin-top:10px; font-size:12px; color:var(--muted); }
+  .dot{ display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px; vertical-align:middle; }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">Farmasol · Marzo — Junio</p>
+  <h1>Tablero de errores por sucursal</h1>
+  <p>Vista completa de todos los cortes armados</p>
+</header>
+
+<main>
+
+  <section>
+    <div class="kpis">
+      <div class="kpi"><p class="label">Total errores</p><p class="value">180</p></div>
+      <div class="kpi"><p class="label">% Altos</p><p class="value" style="color:var(--red)">2.8%</p></div>
+      <div class="kpi"><p class="label">% Medios</p><p class="value" style="color:var(--amber)">10.6%</p></div>
+      <div class="kpi"><p class="label">% Bajos</p><p class="value">86.7%</p></div>
+    </div>
+
+    <div class="grid2">
+      <div class="chart-box">
+        <p class="cap">Errores por severidad</p>
+        <canvas id="donutChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <p class="cap">Errores por sucursal</p>
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">01</span><h2>Comparativa mensual por sucursal</h2></div>
+    <div class="chart-box">
+      <canvas id="monthChart"></canvas>
+    </div>
+    <p class="cap" style="margin-top:20px;">Matriz sucursal x mes</p>
+    <table>
+      <thead><tr><th>Sucursal</th><th>Marzo</th><th>Abril</th><th>Mayo</th><th>Junio</th><th>Total</th></tr></thead>
+      <tbody id="sucMesBody"></tbody>
+    </table>
+    <p class="note">Centro concentra el 67% de los errores totales. Abril y mayo fueron los meses mas criticos; junio muestra la primera baja real (-29.5% vs mayo).</p>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">02</span><h2>Empleados</h2></div>
+    <div class="grid2" style="margin-bottom:20px;">
+      <div class="kpi" style="display:flex; flex-direction:column; justify-content:center;">
+        <p class="label">Empleado con más errores</p>
+        <p class="value" style="font-size:20px;">Labat Yesica</p>
+        <p class="note" style="margin-top:4px;">21 errores en el período</p>
+      </div>
+      <div class="chart-box">
+        <p class="cap">Top empleados por errores</p>
+        <canvas id="empChart"></canvas>
+      </div>
+    </div>
+    <p class="cap">Errores por empleado y mes (top 10, nombres unificados)</p>
+    <table>
+      <thead><tr><th>Empleado</th><th>Marzo</th><th>Abril</th><th>Mayo</th><th>Junio</th><th>Total</th></tr></thead>
+      <tbody id="empMesBody"></tbody>
+    </table>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">03</span><h2>Tipo de error y variación mensual</h2></div>
+    <div class="grid2">
+      <div class="chart-box">
+        <p class="cap">Errores por tipo</p>
+        <canvas id="tipoChart"></canvas>
+        <div class="legend">
+          <span><span class="dot" style="background:#37E58C"></span>Otro (151)</span>
+          <span><span class="dot" style="background:#3FD6E0"></span>Cantidad (11)</span>
+          <span><span class="dot" style="background:#E5B93D"></span>Principio activo (9)</span>
+          <span><span class="dot" style="background:#8B7BE0"></span>Dosis (9)</span>
+        </div>
+      </div>
+      <div class="chart-box">
+        <p class="cap">Variación mensual del total</p>
+        <canvas id="trendChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">04</span><h2>Sucursal x tipo de error</h2></div>
+    <table>
+      <thead><tr><th>Sucursal</th><th>Cantidad</th><th>Dosis</th><th>Principio activo</th><th>Otro</th><th>Total</th></tr></thead>
+      <tbody id="sucTipoBody"></tbody>
+    </table>
+    <p class="note">En todas las sucursales "Otro" domina. Los errores que tocan la medicacion real del paciente se concentran en Centro y 9 de julio.</p>
+  </section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+Chart.defaults.color = '#8FA39A';
+Chart.defaults.font.family = 'Arial';
+
+const seriesColors = { 'Centro': '#37E58C', '9 de julio': '#3FD6E0', 'Rivera': '#E5B93D', 'Talar': '#8B7BE0', 'Retiro': '#E5573F' };
+
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: { labels: ['Bajo','Medio','Alto'], datasets: [{ data: [156,19,5], backgroundColor: ['#37E58C','#E5B93D','#E5573F'], borderWidth: 0 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position:'bottom', labels:{ color:'#8FA39A' } } } }
+});
+
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: { labels: ['Centro','9 de julio','Rivera','Talar','Retiro'], datasets: [{ data: [120,41,15,3,1], backgroundColor: '#3FD6E0', borderRadius: 4, maxBarThickness: 24 }] },
+  options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display:false } }, scales: { x: { beginAtZero: true, grid:{color:'#26302B'} }, y: { grid:{display:false} } } }
+});
+
+const monthData = { 'Centro': [6,41,46,27], '9 de julio': [6,10,9,16], 'Rivera': [0,9,6,0], 'Talar': [0,3,0,0], 'Retiro': [0,1,0,0] };
+new Chart(document.getElementById('monthChart'), {
+  type: 'line',
+  data: { labels: ['Marzo','Abril','Mayo','Junio'], datasets: Object.keys(monthData).map(k => ({ label:k, data:monthData[k], borderColor:seriesColors[k], backgroundColor:seriesColors[k], borderWidth:2, tension:.3, pointRadius:3 })) },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top', labels:{ color:'#8FA39A', boxWidth:10 } } }, scales:{ x:{grid:{display:false}}, y:{beginAtZero:true, grid:{color:'#26302B'}} } }
+});
+
+new Chart(document.getElementById('empChart'), {
+  type: 'bar',
+  data: { labels: ['Labat Yesica','Lopez Macarena','Rios Joana','Simon Nayla','Pavese Irene'], datasets: [{ data: [21,14,14,14,12], backgroundColor: '#37E58C', borderRadius: 4, maxBarThickness: 18 }] },
+  options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{beginAtZero:true, grid:{color:'#26302B'}}, y:{grid:{display:false}} } }
+});
+
+new Chart(document.getElementById('tipoChart'), {
+  type: 'doughnut',
+  data: { labels: ['Otro','Cantidad','Principio activo','Dosis'], datasets: [{ data: [151,11,9,9], backgroundColor: ['#37E58C','#3FD6E0','#E5B93D','#8B7BE0'], borderWidth:0 }] },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }
+});
+
+new Chart(document.getElementById('trendChart'), {
+  type: 'bar',
+  data: { labels: ['Marzo','Abril','Mayo','Junio'], datasets: [{ data: [12,64,61,43], backgroundColor: ['#8FA39A','#E5573F','#E5B93D','#37E58C'], borderRadius:4, maxBarThickness:36 }] },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{grid:{display:false}}, y:{beginAtZero:true, grid:{color:'#26302B'}} } }
+});
+
+function heat(v, max){
+  if(v===0) return 'transparent';
+  const t = v/max;
+  return 'rgba(63,214,224,' + (0.08 + t*0.45).toFixed(2) + ')';
+}
+function fillTable(bodyId, rows, cols, max){
+  const tbody = document.getElementById(bodyId);
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    const nameTd = document.createElement('td');
+    nameTd.textContent = r[0];
+    tr.appendChild(nameTd);
+    for(let i=1;i<=cols;i++){
+      const td = document.createElement('td');
+      td.textContent = r[i];
+      td.style.background = heat(r[i], max);
+      tr.appendChild(td);
+    }
+    const totalTd = document.createElement('td');
+    totalTd.textContent = r[cols+1];
+    totalTd.style.fontWeight = 'bold';
+    totalTd.style.color = '#37E58C';
+    tr.appendChild(totalTd);
+    tbody.appendChild(tr);
+  });
+}
+
+fillTable('sucMesBody', [
+  ['Centro',6,41,46,27,120],
+  ['9 de julio',6,10,9,16,41],
+  ['Rivera',0,9,6,0,15],
+  ['Talar',0,3,0,0,3],
+  ['Retiro',0,1,0,0,1]
+], 4, 46);
+
+fillTable('empMesBody', [
+  ['Labat Yesica',1,10,7,3,21],
+  ['Lopez Macarena',1,8,3,2,14],
+  ['Rios Joana',1,2,9,2,14],
+  ['Simon Nayla',0,6,5,3,14],
+  ['Pavese Irene',1,1,2,8,12],
+  ['Arietto Claudia',0,0,8,4,12],
+  ['Nolan Ailen',2,3,2,2,9],
+  ['Valenzuela Laura',0,6,3,0,9],
+  ['Sittoni Florencia',1,1,4,2,8],
+  ['Olivares Agustina',0,4,3,1,8]
+], 4, 10);
+
+fillTable('sucTipoBody', [
+  ['Centro',5,5,5,105,120],
+  ['9 de julio',6,3,3,29,41],
+  ['Rivera',0,1,1,13,15],
+  ['Talar',0,0,0,3,3],
+  ['Retiro',0,0,0,1,1]
+], 4, 105);
+</script>
+
+</body>
+</html>
