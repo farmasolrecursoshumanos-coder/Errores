@@ -46,19 +46,19 @@
 <body>
 
 <header>
-  <p class="eyebrow">Farmasol · Marzo — Julio</p>
+  <p class="eyebrow">Farmasol · Marzo — Agosto</p>
   <h1>Tablero de errores por sucursal</h1>
-  <p>Actualizado con los datos de julio</p>
+  <p>Actualizado con los datos de agosto</p>
 </header>
 
 <main>
 
   <section>
     <div class="kpis">
-      <div class="kpi"><p class="label">Total errores</p><p class="value">257</p></div>
-      <div class="kpi"><p class="label">% Altos</p><p class="value" style="color:var(--red)">2.3%</p></div>
-      <div class="kpi"><p class="label">% Medios</p><p class="value" style="color:var(--amber)">7.8%</p></div>
-      <div class="kpi"><p class="label">% Bajos</p><p class="value">89.9%</p></div>
+      <div class="kpi"><p class="label">Total errores</p><p class="value">296</p></div>
+      <div class="kpi"><p class="label">% Altos</p><p class="value" style="color:var(--red)">2.0%</p></div>
+      <div class="kpi"><p class="label">% Medios</p><p class="value" style="color:var(--amber)">6.8%</p></div>
+      <div class="kpi"><p class="label">% Bajos</p><p class="value">91.2%</p></div>
     </div>
     <div class="grid2">
       <div class="chart-box"><p class="cap">Errores por severidad</p><canvas id="donutChart"></canvas></div>
@@ -71,10 +71,10 @@
     <div class="chart-box"><canvas id="monthChart"></canvas></div>
     <p class="cap" style="margin-top:20px;">Matriz sucursal x mes</p>
     <table>
-      <thead><tr><th>Sucursal</th><th>Marzo</th><th>Abril</th><th>Mayo</th><th>Junio</th><th>Julio</th><th>Total</th></tr></thead>
+      <thead><tr><th>Sucursal</th><th>Marzo</th><th>Abril</th><th>Mayo</th><th>Junio</th><th>Julio</th><th>Agosto</th><th>Total</th></tr></thead>
       <tbody id="sucMesBody"></tbody>
     </table>
-    <p class="note">Centro sigue concentrando la mayoría de los errores (72% del total). Julio fue el mes con más errores de todo el período (70), impulsado por un salto fuerte en Centro (31 → 60).</p>
+    <p class="note">Centro sigue concentrando la mayoría de los errores (69% del total). Julio fue el mes más crítico (70 errores); agosto bajó a 39, el segundo mes más bajo del período.</p>
   </section>
 
   <section>
@@ -82,17 +82,17 @@
     <div class="grid2" style="margin-bottom:20px;">
       <div class="kpi" style="display:flex; flex-direction:column; justify-content:center;">
         <p class="label">Empleado con más errores</p>
-        <p class="value" style="font-size:20px;">Rojas Antonella</p>
-        <p class="note" style="margin-top:4px;">29 errores en el período</p>
+        <p class="value" style="font-size:20px;">Labat Yesica</p>
+        <p class="note" style="margin-top:4px;">32 errores en el período</p>
       </div>
       <div class="chart-box"><p class="cap">Top empleados por errores</p><canvas id="empChart"></canvas></div>
     </div>
     <p class="cap">Errores por empleado y mes (top 10, nombres unificados)</p>
     <table>
-      <thead><tr><th>Empleado</th><th>Marzo</th><th>Abril</th><th>Mayo</th><th>Junio</th><th>Julio</th><th>Total</th></tr></thead>
+      <thead><tr><th>Empleado</th><th>Marzo</th><th>Abril</th><th>Mayo</th><th>Junio</th><th>Julio</th><th>Agosto</th><th>Total</th></tr></thead>
       <tbody id="empMesBody"></tbody>
     </table>
-    <p class="note">Cambió el liderazgo: Rojas Antonella pasó al primer puesto por un salto puntual en julio (20 errores ese mes solo). Labat Yesica, que lideraba antes, baja al 2° puesto.</p>
+    <p class="note">Labat Yesica recuperó el primer puesto (32 vs 31) tras agosto. Rojas Antonella, que había liderado por el salto de julio, quedó muy cerca en 2° lugar.</p>
   </section>
 
   <section>
@@ -102,10 +102,10 @@
         <p class="cap">Errores por tipo</p>
         <canvas id="tipoChart"></canvas>
         <div class="legend">
-          <span><span class="dot" style="background:#37E58C"></span>Otro (219)</span>
-          <span><span class="dot" style="background:#3FD6E0"></span>Cantidad (17)</span>
+          <span><span class="dot" style="background:#37E58C"></span>Otro (255)</span>
+          <span><span class="dot" style="background:#3FD6E0"></span>Cantidad (18)</span>
+          <span><span class="dot" style="background:#8B7BE0"></span>Dosis (12)</span>
           <span><span class="dot" style="background:#E5B93D"></span>Principio activo (11)</span>
-          <span><span class="dot" style="background:#8B7BE0"></span>Dosis (10)</span>
         </div>
       </div>
       <div class="chart-box"><p class="cap">Variación mensual del total</p><canvas id="trendChart"></canvas></div>
@@ -131,38 +131,38 @@ const seriesColors = { 'Centro': '#37E58C', '9 de julio': '#3FD6E0', 'Rivera': '
 
 new Chart(document.getElementById('donutChart'), {
   type: 'doughnut',
-  data: { labels: ['Bajo','Medio','Alto'], datasets: [{ data: [231,20,6], backgroundColor: ['#37E58C','#E5B93D','#E5573F'], borderWidth: 0 }] },
+  data: { labels: ['Bajo','Medio','Alto'], datasets: [{ data: [270,20,6], backgroundColor: ['#37E58C','#E5B93D','#E5573F'], borderWidth: 0 }] },
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position:'bottom', labels:{ color:'#8FA39A' } } } }
 });
 
 new Chart(document.getElementById('barChart'), {
   type: 'bar',
-  data: { labels: ['Centro','9 de julio','Rivera','Talar','Retiro'], datasets: [{ data: [184,50,18,3,2], backgroundColor: '#3FD6E0', borderRadius: 4, maxBarThickness: 24 }] },
+  data: { labels: ['Centro','9 de julio','Rivera','Talar','Retiro'], datasets: [{ data: [205,67,19,3,2], backgroundColor: '#3FD6E0', borderRadius: 4, maxBarThickness: 24 }] },
   options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display:false } }, scales: { x: { beginAtZero: true, grid:{color:'#26302B'} }, y: { grid:{display:false} } } }
 });
 
-const monthData = { 'Centro': [6,41,46,31,60], '9 de julio': [6,10,9,19,6], 'Rivera': [0,9,6,0,3], 'Talar': [0,3,0,0,0], 'Retiro': [0,1,0,0,1] };
+const monthData = { 'Centro': [6,41,46,31,60,21], '9 de julio': [6,10,9,19,6,17], 'Rivera': [0,9,6,0,3,1], 'Talar': [0,3,0,0,0,0], 'Retiro': [0,1,0,0,1,0] };
 new Chart(document.getElementById('monthChart'), {
   type: 'line',
-  data: { labels: ['Marzo','Abril','Mayo','Junio','Julio'], datasets: Object.keys(monthData).map(k => ({ label:k, data:monthData[k], borderColor:seriesColors[k], backgroundColor:seriesColors[k], borderWidth:2, tension:.3, pointRadius:3 })) },
+  data: { labels: ['Marzo','Abril','Mayo','Junio','Julio','Agosto'], datasets: Object.keys(monthData).map(k => ({ label:k, data:monthData[k], borderColor:seriesColors[k], backgroundColor:seriesColors[k], borderWidth:2, tension:.3, pointRadius:3 })) },
   options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top', labels:{ color:'#8FA39A', boxWidth:10 } } }, scales:{ x:{grid:{display:false}}, y:{beginAtZero:true, grid:{color:'#26302B'}} } }
 });
 
 new Chart(document.getElementById('empChart'), {
   type: 'bar',
-  data: { labels: ['Rojas Antonella','Labat Yesica','Simon Nayla','Lopez Macarena','Arietto Claudia'], datasets: [{ data: [29,26,23,18,17], backgroundColor: '#37E58C', borderRadius: 4, maxBarThickness: 18 }] },
+  data: { labels: ['Labat Yesica','Rojas Antonella','Simon Nayla','Arietto Claudia','Pavese Irene'], datasets: [{ data: [32,31,27,20,19], backgroundColor: '#37E58C', borderRadius: 4, maxBarThickness: 18 }] },
   options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{beginAtZero:true, grid:{color:'#26302B'}}, y:{grid:{display:false}} } }
 });
 
 new Chart(document.getElementById('tipoChart'), {
   type: 'doughnut',
-  data: { labels: ['Otro','Cantidad','Principio activo','Dosis'], datasets: [{ data: [219,17,11,10], backgroundColor: ['#37E58C','#3FD6E0','#E5B93D','#8B7BE0'], borderWidth:0 }] },
+  data: { labels: ['Otro','Cantidad','Dosis','Principio activo'], datasets: [{ data: [255,18,12,11], backgroundColor: ['#37E58C','#3FD6E0','#8B7BE0','#E5B93D'], borderWidth:0 }] },
   options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }
 });
 
 new Chart(document.getElementById('trendChart'), {
   type: 'bar',
-  data: { labels: ['Marzo','Abril','Mayo','Junio','Julio'], datasets: [{ data: [12,64,61,50,70], backgroundColor: ['#8FA39A','#E5573F','#E5B93D','#37E58C','#E5573F'], borderRadius:4, maxBarThickness:32 }] },
+  data: { labels: ['Marzo','Abril','Mayo','Junio','Julio','Agosto'], datasets: [{ data: [12,64,61,50,70,39], backgroundColor: ['#8FA39A','#E5573F','#E5B93D','#37E58C','#E5573F','#37E58C'], borderRadius:4, maxBarThickness:28 }] },
   options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{grid:{display:false}}, y:{beginAtZero:true, grid:{color:'#26302B'}} } }
 });
 
@@ -194,33 +194,33 @@ function fillTable(bodyId, rows, cols, max){
 }
 
 fillTable('sucMesBody', [
-  ['Centro',6,41,46,31,60,184],
-  ['9 de julio',6,10,9,19,6,50],
-  ['Rivera',0,9,6,0,3,18],
-  ['Talar',0,3,0,0,0,3],
-  ['Retiro',0,1,0,0,1,2]
-], 5, 60);
+  ['Centro',6,41,46,31,60,21,205],
+  ['9 de julio',6,10,9,19,6,17,67],
+  ['Rivera',0,9,6,0,3,1,19],
+  ['Talar',0,3,0,0,0,0,3],
+  ['Retiro',0,1,0,0,1,0,2]
+], 6, 60);
 
 fillTable('empMesBody', [
-  ['Rojas Antonella',0,3,1,5,20,29],
-  ['Labat Yesica',1,10,7,3,5,26],
-  ['Simon Nayla',0,6,5,4,8,23],
-  ['Lopez Macarena',1,8,3,2,4,18],
-  ['Arietto Claudia',0,0,8,4,5,17],
-  ['Pavese Irene',1,1,2,10,2,16],
-  ['Doddi Lucrecia',2,0,0,4,8,14],
-  ['Rios Joana',1,2,9,2,0,14],
-  ['Olivares Agustina',0,4,3,2,2,11],
-  ['Nolan Ailen',2,3,2,2,2,11]
-], 5, 20);
+  ['Labat Yesica',1,10,7,3,5,6,32],
+  ['Rojas Antonella',0,3,1,5,20,2,31],
+  ['Simon Nayla',0,6,5,4,8,4,27],
+  ['Arietto Claudia',0,0,8,4,5,3,20],
+  ['Pavese Irene',1,1,2,10,2,3,19],
+  ['Lopez Macarena',1,8,3,2,4,1,19],
+  ['Nolan Ailen',2,3,2,2,2,5,16],
+  ['Doddi Lucrecia',2,0,0,4,8,1,15],
+  ['Rios Joana',1,2,9,2,0,0,14],
+  ['Sittoni Florencia',1,1,4,3,1,2,12]
+], 6, 20);
 
 fillTable('sucTipoBody', [
-  ['Centro',10,6,7,161,184],
-  ['9 de julio',7,3,3,37,50],
-  ['Rivera',0,1,1,16,18],
+  ['Centro',11,6,7,181,205],
+  ['9 de julio',7,5,3,52,67],
+  ['Rivera',0,1,1,17,19],
   ['Talar',0,0,0,3,3],
   ['Retiro',0,0,0,2,2]
-], 4, 161);
+], 4, 181);
 </script>
 
 </body>
