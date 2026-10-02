@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Farmasol — Tablero de errores</title>
+<style>
+  :root{
+    --bg:#0A0C0B;
+    --panel:#111512;
+    --line:#26302B;
+    --green:#37E58C;
+    --cyan:#3FD6E0;
+    --amber:#E5B93D;
+    --red:#E5573F;
+    --ink:#EAF2ED;
+    --muted:#8FA39A;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family: Arial, Helvetica, sans-serif; }
+  header{ padding:48px 40px 32px; border-bottom:1px solid var(--line); }
+  header .eyebrow{ text-transform:uppercase; letter-spacing:.14em; font-size:12px; color:var(--cyan); margin:0 0 8px; }
+  header h1{ font-size:30px; margin:0 0 6px; font-weight:400; color:var(--ink); }
+  header p{ font-size:14px; color:var(--muted); margin:0; }
+  main{ max-width:1080px; margin:0 auto; padding:32px 24px 80px; }
+  section{ margin-bottom:56px; }
+  .section-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:20px; border-bottom:1px solid var(--line); padding-bottom:10px; }
+  .section-num{ font-size:12px; color:var(--green); letter-spacing:.08em; }
+  .section-head h2{ font-size:19px; font-weight:400; margin:0; color:var(--ink); }
+  .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px; }
+  .kpi{ background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:16px 18px; }
+  .kpi .label{ font-size:12px; color:var(--muted); margin:0 0 6px; }
+  .kpi .value{ font-size:26px; margin:0; color:var(--green); }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .chart-box{ background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:16px; }
+  .chart-box .cap{ font-size:12px; color:var(--muted); margin:0 0 10px; }
+  canvas{ max-height:220px; }
+  table{ width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px; }
+  th{ text-align:right; padding:7px 8px; border-bottom:1px solid var(--line); color:var(--muted); font-weight:400; font-size:11.5px; }
+  th:first-child, td:first-child{ text-align:left; }
+  td{ text-align:right; padding:7px 8px; border-bottom:1px solid var(--line); color:var(--ink); }
+  .note{ font-size:13px; color:var(--muted); line-height:1.6; margin:14px 0 0; }
+  .legend{ display:flex; flex-wrap:wrap; gap:14px; margin-top:10px; font-size:12px; color:var(--muted); }
+  .dot{ display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px; vertical-align:middle; }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">Farmasol · Marzo — Septiembre</p>
+  <h1>Tablero de errores por sucursal</h1>
+  <p>Actualizado con los datos de septiembre</p>
+</header>
+
+<main>
+
+  <section>
+    <div class="kpis">
+      <div class="kpi"><p class="label">Total errores</p><p class="value">344</p></div>
+      <div class="kpi"><p class="label">% Altos</p><p class="value" style="color:var(--red)">2.0%</p></div>
+      <div class="kpi"><p class="label">% Medios</p><p class="value" style="color:var(--amber)">6.4%</p></div>
+      <div class="kpi"><p class="label">% Bajos</p><p class="value">91.6%</p></div>
+    </div>
+    <div class="grid2">
+      <div class="chart-box"><p class="cap">Errores por severidad</p><canvas id="donutChart"></canvas></div>
+      <div class="chart-box"><p class="cap">Errores por sucursal</p><canvas id="barChart"></canvas></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">01</span><h2>Comparativa mensual por sucursal</h2></div>
+    <div class="chart-box"><canvas id="monthChart"></canvas></div>
+    <p class="cap" style="margin-top:20px;">Matriz sucursal x mes</p>
+    <table>
+      <thead><tr><th>Sucursal</th><th>Mar</th><th>Abr</th><th>May</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Sep</th><th>Total</th></tr></thead>
+      <tbody id="sucMesBody"></tbody>
+    </table>
+    <p class="note">Centro sigue concentrando la mayoría de los errores (69% del total). Septiembre subió a 48 errores (desde 39 en agosto), con Centro pasando de 21 a 34.</p>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">02</span><h2>Empleados</h2></div>
+    <div class="grid2" style="margin-bottom:20px;">
+      <div class="kpi" style="display:flex; flex-direction:column; justify-content:center;">
+        <p class="label">Empleado con más errores</p>
+        <p class="value" style="font-size:20px;">Rojas Antonella</p>
+        <p class="note" style="margin-top:4px;">43 errores en el período</p>
+      </div>
+      <div class="chart-box"><p class="cap">Top empleados por errores</p><canvas id="empChart"></canvas></div>
+    </div>
+    <p class="cap">Errores por empleado y mes (top 10, nombres unificados)</p>
+    <table>
+      <thead><tr><th>Empleado</th><th>Mar</th><th>Abr</th><th>May</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Sep</th><th>Total</th></tr></thead>
+      <tbody id="empMesBody"></tbody>
+    </table>
+    <p class="note">Rojas Antonella vuelve a liderar con 43 errores (12 en septiembre), superando a Labat Yesica (38) que había tomado la delantera en agosto.</p>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">03</span><h2>Tipo de error y variación mensual</h2></div>
+    <div class="grid2">
+      <div class="chart-box">
+        <p class="cap">Errores por tipo</p>
+        <canvas id="tipoChart"></canvas>
+        <div class="legend">
+          <span><span class="dot" style="background:#37E58C"></span>Otro (298)</span>
+          <span><span class="dot" style="background:#3FD6E0"></span>Cantidad (19)</span>
+          <span><span class="dot" style="background:#8B7BE0"></span>Dosis (16)</span>
+          <span><span class="dot" style="background:#E5B93D"></span>Principio activo (11)</span>
+        </div>
+      </div>
+      <div class="chart-box"><p class="cap">Variación mensual del total</p><canvas id="trendChart"></canvas></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">04</span><h2>Sucursal x tipo de error</h2></div>
+    <table>
+      <thead><tr><th>Sucursal</th><th>Cantidad</th><th>Dosis</th><th>Principio activo</th><th>Otro</th><th>Total</th></tr></thead>
+      <tbody id="sucTipoBody"></tbody>
+    </table>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">05</span><h2>Impacto económico</h2></div>
+    <div class="kpis" style="grid-template-columns:repeat(2,1fr);">
+      <div class="kpi"><p class="label">Monto total registrado</p><p class="value">$1.613.225</p></div>
+      <div class="kpi"><p class="label">Errores con monto cargado</p><p class="value">26 <span style="font-size:13px; color:var(--muted);">/ 344</span></p></div>
+    </div>
+    <div class="grid2">
+      <div class="chart-box">
+        <p class="cap">Monto total por sucursal</p>
+        <canvas id="montoSucursalChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <p class="cap">Monto total por tipo de error</p>
+        <canvas id="montoTipoChart"></canvas>
+      </div>
+    </div>
+    <p class="note">Solo 26 de los 344 errores tienen un monto cargado — la mayoría no registra impacto económico. Un solo caso en Centro ($951.390, "autorizó por 9 de julio pero tickeó en Centro") concentra el 59% del total; sin ese caso puntual, Centro bajaría a $649.602. Retiro incluye un valor negativo (-$17.695), probablemente una nota de crédito o corrección.</p>
+  </section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+Chart.defaults.color = '#8FA39A';
+Chart.defaults.font.family = 'Arial';
+
+const seriesColors = { 'Centro': '#37E58C', '9 de julio': '#3FD6E0', 'Rivera': '#E5B93D', 'Talar': '#8B7BE0', 'Retiro': '#E5573F' };
+
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: { labels: ['Bajo','Medio','Alto'], datasets: [{ data: [315,22,7], backgroundColor: ['#37E58C','#E5B93D','#E5573F'], borderWidth: 0 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position:'bottom', labels:{ color:'#8FA39A' } } } }
+});
+
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: { labels: ['Centro','9 de julio','Rivera','Talar','Retiro'], datasets: [{ data: [239,80,19,3,3], backgroundColor: '#3FD6E0', borderRadius: 4, maxBarThickness: 24 }] },
+  options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display:false } }, scales: { x: { beginAtZero: true, grid:{color:'#26302B'} }, y: { grid:{display:false} } } }
+});
+
+const monthData = { 'Centro': [6,41,46,31,60,21,34], '9 de julio': [6,10,9,19,6,17,13], 'Rivera': [0,9,6,0,3,1,0], 'Talar': [0,3,0,0,0,0,0], 'Retiro': [0,1,0,0,1,0,1] };
+new Chart(document.getElementById('monthChart'), {
+  type: 'line',
+  data: { labels: ['Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre'], datasets: Object.keys(monthData).map(k => ({ label:k, data:monthData[k], borderColor:seriesColors[k], backgroundColor:seriesColors[k], borderWidth:2, tension:.3, pointRadius:3 })) },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top', labels:{ color:'#8FA39A', boxWidth:10 } } }, scales:{ x:{grid:{display:false}}, y:{beginAtZero:true, grid:{color:'#26302B'}} } }
+});
+
+new Chart(document.getElementById('empChart'), {
+  type: 'bar',
+  data: { labels: ['Rojas Antonella','Labat Yesica','Simon Nayla','Arietto Claudia','Lopez Macarena'], datasets: [{ data: [43,38,32,24,21], backgroundColor: '#37E58C', borderRadius: 4, maxBarThickness: 18 }] },
+  options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{beginAtZero:true, grid:{color:'#26302B'}}, y:{grid:{display:false}} } }
+});
+
+new Chart(document.getElementById('tipoChart'), {
+  type: 'doughnut',
+  data: { labels: ['Otro','Cantidad','Dosis','Principio activo'], datasets: [{ data: [298,19,16,11], backgroundColor: ['#37E58C','#3FD6E0','#8B7BE0','#E5B93D'], borderWidth:0 }] },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }
+});
+
+new Chart(document.getElementById('trendChart'), {
+  type: 'bar',
+  data: { labels: ['Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre'], datasets: [{ data: [12,64,61,50,70,39,48], backgroundColor: ['#8FA39A','#E5573F','#E5B93D','#37E58C','#E5573F','#37E58C','#E5B93D'], borderRadius:4, maxBarThickness:26 }] },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{grid:{display:false}}, y:{beginAtZero:true, grid:{color:'#26302B'}} } }
+});
+
+function heat(v, max){
+  if(v===0) return 'transparent';
+  const t = v/max;
+  return 'rgba(63,214,224,' + (0.08 + t*0.45).toFixed(2) + ')';
+}
+function fillTable(bodyId, rows, cols, max){
+  const tbody = document.getElementById(bodyId);
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    const nameTd = document.createElement('td');
+    nameTd.textContent = r[0];
+    tr.appendChild(nameTd);
+    for(let i=1;i<=cols;i++){
+      const td = document.createElement('td');
+      td.textContent = r[i];
+      td.style.background = heat(r[i], max);
+      tr.appendChild(td);
+    }
+    const totalTd = document.createElement('td');
+    totalTd.textContent = r[cols+1];
+    totalTd.style.fontWeight = 'bold';
+    totalTd.style.color = '#37E58C';
+    tr.appendChild(totalTd);
+    tbody.appendChild(tr);
+  });
+}
+
+fillTable('sucMesBody', [
+  ['Centro',6,41,46,31,60,21,34,239],
+  ['9 de julio',6,10,9,19,6,17,13,80],
+  ['Rivera',0,9,6,0,3,1,0,19],
+  ['Retiro',0,1,0,0,1,0,1,3],
+  ['Talar',0,3,0,0,0,0,0,3]
+], 7, 60);
+
+fillTable('empMesBody', [
+  ['Rojas Antonella',0,3,1,5,20,2,12,43],
+  ['Labat Yesica',1,10,7,3,5,6,6,38],
+  ['Simon Nayla',0,6,5,4,8,4,5,32],
+  ['Arietto Claudia',0,0,8,4,5,3,4,24],
+  ['Lopez Macarena',1,8,3,2,4,1,2,21],
+  ['Pavese Irene',1,1,2,10,2,3,1,20],
+  ['Nolan Ailen',2,3,2,2,2,5,1,17],
+  ['Doddi Lucrecia',2,0,0,4,8,1,2,17],
+  ['Rios Joana',1,2,9,2,0,0,0,14],
+  ['Torrini Laura',1,0,0,0,1,4,7,13]
+], 7, 20);
+
+fillTable('sucTipoBody', [
+  ['Centro',12,9,7,211,239],
+  ['9 de julio',7,5,3,65,80],
+  ['Rivera',0,1,1,17,19],
+  ['Retiro',0,1,0,2,3],
+  ['Talar',0,0,0,3,3]
+], 4, 211);
+
+new Chart(document.getElementById('montoSucursalChart'), {
+  type: 'bar',
+  data: { labels: ['Centro','9 de julio','Retiro','Rivera','Talar'], datasets: [{ data: [1600992,6700,4733,800,0], backgroundColor: '#3FD6E0', borderRadius: 4, maxBarThickness: 24 }] },
+  options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{beginAtZero:true, grid:{color:'#26302B'}}, y:{grid:{display:false}} } }
+});
+
+new Chart(document.getElementById('montoTipoChart'), {
+  type: 'bar',
+  data: { labels: ['Otro','Dosis','Principio activo','Cantidad'], datasets: [{ data: [1547720,55645,9860,0], backgroundColor: '#37E58C', borderRadius: 4, maxBarThickness: 24 }] },
+  options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{beginAtZero:true, grid:{color:'#26302B'}}, y:{grid:{display:false}} } }
+});
+</script>
+
+</body>
+</html>
